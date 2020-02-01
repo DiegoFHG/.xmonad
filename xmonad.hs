@@ -22,7 +22,7 @@ import XMonad.Hooks.DynamicProperty
 import XMonad.Util.EZConfig
 
 -- Startup scripts.
--- Make create a master script.
+-- Maybe create a master script.
 myStartupHook = do
   -- Sets wallpaper.
   spawnOnce "nitrogen --restore" 
