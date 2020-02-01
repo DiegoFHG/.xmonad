@@ -10,6 +10,8 @@ import XMonad.Util.SpawnOnce
 import XMonad.Hooks.EwmhDesktops
 -- For using scratchpads.
 import XMonad.Util.NamedScratchpad
+-- For applying actions on all of the windows in the current workspace.
+import XMonad.Actions.WithAll
 
 -- Hooks.
 import XMonad.Hooks.ManageDocks (ToggleStruts(..),avoidStruts,docks,manageDocks)
@@ -22,6 +24,7 @@ myStartupHook = do
   spawnOnce "nitrogen --restore"
   spawnOnce "$HOME/.config/polybar/polybar_launch.sh"
   spawnOnce "picom"
+  spawnOnce "$HOME/.xmonad/scripts/hot_reload.sh"
 
 myLayouts = smartBorders $ avoidStruts tiled ||| noBorders Full
   where
@@ -45,7 +48,9 @@ myScratchPads = [ NS "spotify" spawnSpotify findSpotify manageSpotify
 
 myKeybindings = 
   [
-    ("M-C-s", namedScratchpadAction myScratchPads "spotify")
+    ("M-C-s", namedScratchpadAction myScratchPads "spotify"),
+    ("M-p", spawn "rofi -show drun -display-drun '⟶ '"),
+    ("M-C-S-k", killAll)
   ]
 
 myHandleEventHook = dynamicPropertyChange "WM_NAME" (title =? "Spotify" --> floating)
@@ -64,3 +69,4 @@ main = do
       manageHook = manageHook defaultConfig <+> manageDocks,
       handleEventHook = myHandleEventHook
     } `additionalKeysP` myKeybindings
+
