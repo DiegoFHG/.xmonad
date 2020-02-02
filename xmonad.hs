@@ -13,6 +13,9 @@ import XMonad.Hooks.EwmhDesktops
 import XMonad.Util.NamedScratchpad
 -- For applying actions on all of the windows in the current workspace.
 import XMonad.Actions.WithAll
+-- For manipulating layouts on command.
+import XMonad.Layout.MultiToggle
+import XMonad.Layout.MultiToggle.Instances
 
 -- Hooks.
 import XMonad.Hooks.ManageDocks (ToggleStruts(..),avoidStruts,docks,manageDocks)
@@ -24,8 +27,8 @@ import XMonad.Util.EZConfig
 -- Startup scripts.
 -- Maybe create a master script.
 myStartupHook = do
-  -- Sets wallpaper.
-  spawnOnce "nitrogen --restore" 
+  -- Sets wallpaper and start wallshow.
+  spawnOnce "perl6 $HOME/.xmonad/scripts/wallshow.pm6 $HOME/Wallpapers/Single/ 10" 
   -- Status bar on top.
   spawnOnce "$HOME/.config/polybar/polybar_launch.sh"
   -- Compositor (Transparency and shadows).
@@ -34,7 +37,7 @@ myStartupHook = do
   spawnOnce "$HOME/.xmonad/scripts/hot_reload.sh"
 
 -- Layouts.
-myLayouts = smartBorders $ avoidStruts tiled ||| noBorders Full
+myLayouts = smartBorders $ mkToggle (FULL ?? EOT) $ avoidStruts(tiled ||| Mirror tiled) 
   where
     tiled = spacing 5 $ Tall nmaster delta ratio
     nmaster = 1
@@ -45,7 +48,7 @@ myLayouts = smartBorders $ avoidStruts tiled ||| noBorders Full
 myScratchPads = 
   [ 
     NS "spotify" "spotify" (resource =? "spotify") defaultFloating,
-    NS "terminal" (myTerminal ++ " --title=scratchpad-terminal") (title =? "scratchpad-terminal") defaultFloating
+    NS "terminal" (myTerminal ++ " --title=scratchpad-terminal --position 250 70") (title =? "scratchpad-terminal") defaultFloating
   ]
 
 -- Custom keybindings.
@@ -53,8 +56,11 @@ myKeybindings =
   [
     ("M-C-s", namedScratchpadAction myScratchPads "spotify"),
     ("M-C-t", namedScratchpadAction myScratchPads "terminal"),
-    ("M-p", spawn "rofi -show drun -display-drun '⟶ '"),
-    ("M-C-S-k", killAll)
+    ("M-p", spawn "rofi -show drun -display-drun '⟶  '"),
+    ("M-C-S-k", killAll),
+    ("M-n", spawn "networkmanager_dmenu"),
+    ("M-C-l", spawn "light-locker-command -l"),
+    ("M-C-f", sendMessage $ Toggle FULL)
   ]
 
 -- HandleEventsHooks.
@@ -67,9 +73,9 @@ terminalHandleEventHook = dynamicPropertyChange "WM_NAME" (title =? "scratchpad-
 myHandleEventHook = spotifyHandleEventHook <+> terminalHandleEventHook
 
 -- Custom variables.
-myTerminal = "kitty"
+myTerminal = "alacritty"
 myModMask = mod1Mask
-myWorkspaces = ["1","2","3","4","5","6","7","8","9"]
+myWorkspaces = ["WEB","DEV","TERM","DB","TEST","COMS"]
 myBorderWidth = 3
 myNormalBorderColor = "#4C566A"
 myFocusedBorderColor = "#5E81AC"
