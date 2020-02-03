@@ -75,7 +75,7 @@ myHandleEventHook = spotifyHandleEventHook <+> terminalHandleEventHook
 -- Custom variables.
 myTerminal = "alacritty"
 myModMask = mod1Mask
-myWorkspaces = ["WEB","DEV","TERM","DB","TEST","COMS"]
+myWorkspaces = ["爵 WEB","{} DEV",">_ TERM","力 DB","ﭧ TEST","鷺 COMS"]
 myBorderWidth = 3
 myNormalBorderColor = "#4C566A"
 myFocusedBorderColor = "#5E81AC"
