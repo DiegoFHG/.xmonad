@@ -3,6 +3,7 @@ import XMonad
 -- Layout.
 import XMonad.Layout.Spacing
 import XMonad.Layout.NoBorders
+import XMonad.Layout.ResizableTile
 import qualified XMonad.StackSet as W
 
 -- Utils.
@@ -16,6 +17,8 @@ import XMonad.Actions.WithAll
 -- For manipulating layouts on command.
 import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
+import XMonad.Hooks.SetWMName
+import XMonad.Layout.TrackFloating
 
 -- Hooks.
 import XMonad.Hooks.ManageDocks (ToggleStruts(..),avoidStruts,docks,manageDocks)
@@ -35,11 +38,12 @@ myStartupHook = do
   spawnOnce "picom"
   -- Script that recompiles and restarts XMonad when a change occurs in this file.
   spawnOnce "$HOME/.xmonad/scripts/hot_reload.sh"
+  setWMName "LG3D"
 
 -- Layouts.
 myLayouts = smartBorders $ mkToggle (FULL ?? EOT) $ avoidStruts(tiled ||| Mirror tiled) 
   where
-    tiled = spacing 5 $ Tall nmaster delta ratio
+    tiled = spacing 5 $ ResizableTall nmaster delta ratio []
     nmaster = 1
     delta = 3/100
     ratio = 1/2
@@ -48,7 +52,7 @@ myLayouts = smartBorders $ mkToggle (FULL ?? EOT) $ avoidStruts(tiled ||| Mirror
 myScratchPads = 
   [ 
     NS "spotify" "spotify" (resource =? "spotify") defaultFloating,
-    NS "terminal" (myTerminal ++ " --title=scratchpad-terminal --position 250 70") (title =? "scratchpad-terminal") defaultFloating
+    NS "terminal" (myTerminal ++ " --title=scratchpad-terminal --class=scratchpad-terminal") (resource =? "scratchpad-terminal") defaultFloating
   ]
 
 -- Custom keybindings.
@@ -60,7 +64,9 @@ myKeybindings =
     ("M-C-S-k", killAll),
     ("M-n", spawn "networkmanager_dmenu"),
     ("M-C-l", spawn "light-locker-command -l"),
-    ("M-C-f", sendMessage $ Toggle FULL)
+    ("M-C-f", sendMessage $ Toggle FULL),
+    ("M-a", sendMessage $ MirrorExpand),
+    ("M-z", sendMessage $ MirrorShrink)
   ]
 
 -- HandleEventsHooks.
@@ -73,9 +79,9 @@ terminalHandleEventHook = dynamicPropertyChange "WM_NAME" (title =? "scratchpad-
 myHandleEventHook = spotifyHandleEventHook <+> terminalHandleEventHook
 
 -- Custom variables.
-myTerminal = "alacritty"
+myTerminal = "kitty"
 myModMask = mod1Mask
-myWorkspaces = ["爵 WEB","{} DEV",">_ TERM","力 DB","ﭧ TEST","鷺 COMS"]
+myWorkspaces = ["爵 WEB", "{} DEV", ">_ TERM", "力 DB", "ﭧ TEST", "鷺 COMS", "WRT", "GG"]
 myBorderWidth = 3
 myNormalBorderColor = "#4C566A"
 myFocusedBorderColor = "#5E81AC"
